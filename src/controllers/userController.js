@@ -54,7 +54,7 @@ const loginUser = async function (req, res) {
         if (!isValidEmail(email)) return res.status(400).send({ status: false, msg: `${email} is not valid` })
         let isUserEmailExist = await userModel.findOne({ email: email });
         if (!isUserEmailExist) return res.status(404).send({ status: false, msg: "Email not found" })
-       
+
         if (!isValid(password)) return res.status(400).send({ status: false, msg: "Password is a mendatory field" })
         if (!isValidPassword(password)) return res.status(400).send({ status: false, msg: `Password ${password}  must include atleast one special character[@$!%?&], one uppercase, one lowercase, one number and should be mimimum 8 to 15 characters long` })
         let isUserPasswordExist = await userModel.findOne({ password: password });
@@ -66,10 +66,11 @@ const loginUser = async function (req, res) {
             {
                 userId: _id.toString(),
                 batch: "uranium",
-                organisation: "FunctionUp"
+                organisation: "FunctionUp",
+                iat: Math.floor(Date.now() / 1000),
+                exp: Math.floor(Date.now() / 1000 + 24 * 60 * 60)
             },
-            "Dksfoljdc45095",
-            { expiresIn: "1d" }
+            "Dksfoljdc45095"
         );
         res.setHeader("x-api-key", token);
         res.status(200).send({ status: true, message: "Success", data: { token: token } });
