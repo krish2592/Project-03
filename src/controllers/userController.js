@@ -2,6 +2,7 @@ const userModel = require("../models/userModel");
 const { isValidRequestBody, isValid, isValidEnum, isValidName, isValidMobile, isValidEmail, isValidPassword } = require("../utilities/validator");
 const jwt = require("jsonwebtoken")
 
+
 //--Register User
 const registerUser = async function (req, res) {
     try {
@@ -76,7 +77,7 @@ const loginUser = async function (req, res) {
         res.status(200).send({ status: true, message: "Success", data: { token: token } });
     }
     catch (err) {
-        res.status(500).send({ Error: "Server not responding", error: err.message });
+        res.status(500).send({ status:false, error: err.message });
     }
 };
 
