@@ -9,7 +9,8 @@ const registerUser = async function (req, res) {
 
         if (!isValidRequestBody(requestBody)) return res.status(400).send({ status: false, msg: "Invalid request, please provide details" })
 
-        let { title, name, phone, email, password, address: { street, city, pincode } } = requestBody
+        let { title, name, phone, email, password,address } = requestBody
+           
 
         if (!isValid(title)) return res.status(400).send({ status: false, msg: "Title is a mendatory field" })
         if (!isValidEnum(title)) return res.status(400).send({ status: false, msg: "Title must contain Mr, Mrs, Miss" })
@@ -29,9 +30,14 @@ const registerUser = async function (req, res) {
 
         if (!isValid(password)) return res.status(400).send({ status: false, msg: "Password is a mendatory field" })
         if (!isValidPassword(password)) return res.status(400).send({ status: false, msg: `Password ${password}  must include atleast one special character[@$!%?&], one uppercase, one lowercase, one number and should be mimimum 8 to 15 characters long` })
+        const userData = { title, name, phone, email, password, address };
+        const userData2 = { title, name, phone, email, password };
+        if(!address){const saveUser = await userModel.create( userData2)
 
-        const userData = { title, name, phone, email, password, address: { street, city, pincode } };
-        const saveUser = await userModel.create(userData)
+        return res.status(201).send({ status: true, message: "Sucess", data: saveUser })
+        }
+
+        const saveUser = await userModel.create( userData)
 
         return res.status(201).send({ status: true, message: "Sucess", data: saveUser })
 
