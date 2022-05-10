@@ -2,43 +2,50 @@ const userModel = require("../models/userModel");
 const { isValidRequestBody, isValid, isValidEnum, isValidName, isValidMobile, isValidEmail, isValidPassword } = require("../utilities/validator");
 const jwt = require("jsonwebtoken")
 
+
+
 //--Register User
 const registerUser = async function (req, res) {
     try {
+//==validate request body==//
         let requestBody = req.body
-
         if (!isValidRequestBody(requestBody)) return res.status(400).send({ status: false, msg: "Invalid request, please provide details" })
-
         let { title, name, phone, email, password,address } = requestBody
            
-
+//==validate title==//
         if (!isValid(title)) return res.status(400).send({ status: false, msg: "Title is a mendatory field" })
         if (!isValidEnum(title)) return res.status(400).send({ status: false, msg: "Title must contain Mr, Mrs, Miss" })
 
+//==validate name==//
         if (!isValid(name)) return res.status(400).send({ status: false, msg: "Name is a mendatory field" })
         if (!isValidName(name)) return res.status(400).send({ status: false, msg: "Name must contain only alphabates" })
 
+//==validate phone==//        
         if (!isValid(phone)) return res.status(400).send({ status: false, msg: "Phone number is a mendatory field" })
         if (!isValidMobile(phone)) return res.status(400).send({ status: false, msg: `${phone} number is not a valid` })
         let isUniquePhone = await userModel.findOne({ phone: phone })
         if (isUniquePhone) return res.status(400).send({ status: false, msg: `${phone} number is already exist` })
 
+//==validate email==//
         if (!isValid(email)) return res.status(400).send({ status: false, msg: "email is a mendatory field" })
         if (!isValidEmail(email)) return res.status(400).send({ status: false, msg: `${email} is not valid` })
         let isUniqueEmail = await userModel.findOne({ email: email })
         if (isUniqueEmail) return res.status(400).send({ status: false, msg: `${email} is already exist` })
 
+//==validate password==//
         if (!isValid(password)) return res.status(400).send({ status: false, msg: "Password is a mendatory field" })
         if (!isValidPassword(password)) return res.status(400).send({ status: false, msg: `Password ${password}  must include atleast one special character[@$!%?&], one uppercase, one lowercase, one number and should be mimimum 8 to 15 characters long` })
-        const userData = { title, name, phone, email, password, address };
-        const userData2 = { title, name, phone, email, password };
-        if(!address){const saveUser = await userModel.create( userData2)
 
+//==creating user without address==//
+        if(!address){
+        const userData2 = { title, name, phone, email, password };
+        const saveUser = await userModel.create( userData2)
         return res.status(201).send({ status: true, message: "Sucess", data: saveUser })
         }
 
+//==creating user with address==//
+        const userData = { title, name, phone, email, password, address };
         const saveUser = await userModel.create( userData)
-
         return res.status(201).send({ status: true, message: "Success", data: saveUser })
 
     } catch (err) {
@@ -47,27 +54,30 @@ const registerUser = async function (req, res) {
 }
 
 
+//**********************************************************************//
+
+
 //---User LOGIN
 const loginUser = async function (req, res) {
-
     try {
+//==validate request body==//
         let requestBody = req.body;
         if (!isValidRequestBody(requestBody)) return res.status(400).send({ status: false, msg: "Invalid request, please provide details" })
-
         const { email, password } = requestBody
 
+//==validate email==//
         if (!isValid(email)) return res.status(400).send({ status: false, msg: "email is a mendatory field" })
         if (!isValidEmail(email)) return res.status(400).send({ status: false, msg: `${email} is not valid` })
         
-
+//==validate password==//
         if (!isValid(password)) return res.status(400).send({ status: false, msg: "Password is a mendatory field" })
 
-
+//==finding userDocument==//
         let isUserEmailExist = await userModel.findOne({ email: email,password: password });
         if (!isUserEmailExist) return res.status(404).send({ status: false, msg: "Email or Password is incorrect!" })
-
         const { _id } = isUserEmailExist;
 
+//==creating token==//
         let token = jwt.sign(
             {
                 userId: _id.toString(),
@@ -84,5 +94,6 @@ const loginUser = async function (req, res) {
     }
 };
 
+//**********************************************************************//
 
 module.exports = { registerUser, loginUser }
