@@ -17,7 +17,6 @@ const { isValidObjectId } = require("mongoose");
 
         let { title, excerpt, userId, ISBN, category, subcategory, reviews, deletedAt, isDeleted, releasedAt } = requestBody
 
-
     //==validating title==//
         if (!isValid(title)) return res.status(400).send({ status: false, msg: "Title is a mendatory field" })
         let isUniqueTitle = await bookModel.findOne({ title: title })
