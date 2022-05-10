@@ -41,5 +41,15 @@ let isValidEnum= function(value){
     let title=["Mr", "Mrs","Miss"];
   return  title.indexOf(value) !== -1;
 }
+let isValidISBN=function(value){
+    let isbnRegex=/(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)/
+    return isbnRegex.test(value);
+}
+function isValidDate(value) {
+    let regEx = /^\d{4}-\d{2}-\d{2}$/;
+    return regEx.test(value);
+  }
+  
 
-module.exports = { isValidRequestBody, isValid, isValidObjectId, isValidEmail, isValidMobile, isValidName, isValidPassword,isValidEnum }
+
+module.exports = { isValidRequestBody,isValidDate,isValidISBN, isValid, isValidObjectId, isValidEmail, isValidMobile, isValidName, isValidPassword, isValidEnum }
