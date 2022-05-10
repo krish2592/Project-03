@@ -1,6 +1,6 @@
 
 const bookModel = require("../models/bookModel");
-const { isValidRequestBody, isValid, isValidDate, isValidEnum, isValidName, isValidMobile, isValidEmail, isValidPassword, isValidISBN } = require("../utilities/validator");
+const { isValidRequestBody, isValid, isValidDate, isValidISBN } = require("../utilities/validator");
 const jwt = require("jsonwebtoken");
 const userModel = require("../models/userModel");
 const { isValidObjectId } = require("mongoose");
@@ -108,5 +108,21 @@ const updateBook = async function (req, res) {
     return res.status(200).send({ status: true, message: "Success", data:updateBook})
 }
 
-module.exports = { createBook, getBookList, updateBook }
 
+const deleteBookData= async function(req,res){
+    try {
+
+let data = req.params.bookId;
+const deleteById= await bookModel.findOne({isDeleted:false,_id:data})
+if(!deleteById) return res.status(404).send({status:false, msg:"Book not found"}) 
+const deleteBook = await bookModel.findOneAndUpdate({_id:data},{isDeleted:true},{new:true})
+return res.status(200).send({ status: true, msg: delete successfully, data:deleteBook})
+    
+
+    }catch(error)
+    {
+        return res.status(500).send({ status: false, msg: err.message })
+    }
+}
+
+module.exports={createBook,getBookList,deleteBookData,updateBook}
