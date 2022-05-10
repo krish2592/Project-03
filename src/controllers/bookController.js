@@ -1,6 +1,8 @@
 
 const bookModel = require("../models/bookModel");
 const { isValidRequestBody, isValid, isValidDate, isValidISBN } = require("../utilities/validator");
+
+const jwt = require("jsonwebtoken");
 const userModel = require("../models/userModel");
 const { isValidObjectId } = require("mongoose");
 
@@ -12,11 +14,13 @@ const { isValidObjectId } = require("mongoose");
     //==validating request body==//
         let requestBody = req.body
         if (!isValidRequestBody(requestBody)) return res.status(400).send({ status: false, msg: "Invalid request, please provide details" })
-        let {title,excerpt ,userId, ISBN,category,subcategory,reviews,deletedAt,isDeleted, releasedAt } = requestBody
+
+        let { title, excerpt, userId, ISBN, category, subcategory, reviews, deletedAt, isDeleted, releasedAt } = requestBody
+
 
     //==validating title==//
         if (!isValid(title)) return res.status(400).send({ status: false, msg: "Title is a mendatory field" })
-        let isUniqueTitle = await bookModel.findOne({ title: title})
+        let isUniqueTitle = await bookModel.findOne({ title: title })
         if (isUniqueTitle) return res.status(400).send({ status: false, msg: `${title} is already exist` })
 
     //==validating excerpt==//
@@ -25,13 +29,13 @@ const { isValidObjectId } = require("mongoose");
     //==validating userId==//
         if (!isValid(userId)) return res.status(400).send({ status: false, msg: "UserId is a mendatory field" })
         if (!isValidObjectId(userId)) return res.status(400).send({ status: false, msg: `${userId}  is not a valid` })
-        let isUniqueUserId= await userModel.findOne({ _id: userId})
-        if(!isUniqueUserId)return res.status(404).send({status:false, msg:"User not found"})
+        let isUniqueUserId = await userModel.findOne({ _id: userId })
+        if (!isUniqueUserId) return res.status(404).send({ status: false, msg: "User not found" })
 
     //==validating ISBN==//
         if (!isValid(ISBN)) return res.status(400).send({ status: false, msg: "ISBN is a mendatory field" })
-        if(!isValidISBN(ISBN)) return res.status(400).send({ status: false, msg: "ISBN is invalid " })
-        let isUniqueISBN= await bookModel.findOne({ ISBN: ISBN})
+        if (!isValidISBN(ISBN)) return res.status(400).send({ status: false, msg: "ISBN is invalid " })
+        let isUniqueISBN = await bookModel.findOne({ ISBN: ISBN })
         if (isUniqueISBN) return res.status(400).send({ status: false, msg: `${ISBN} is already exist` })
 
     //==validating category==//   
@@ -54,6 +58,7 @@ const { isValidObjectId } = require("mongoose");
     }
 
 }
+
 
 //**********************************************************************//
 
@@ -103,5 +108,74 @@ const { isValidObjectId } = require("mongoose");
 
 //**********************************************************************//
 
-module.exports={createBook,getBookList,getBookById}
+//---UPDATE BOOK BY BOOK-ID
+    const updateBook = async function (req, res) {
+    try{
+    //==validating bookId==//
+        const bookId = req.params.bookId;
+        if (!isValidObjectId(bookId)) return res.status(400).send({ status: false, message: "Not a valid book id" })
 
+    //==validating request body==//
+        let requestBody = req.body
+        if (!isValidRequestBody(requestBody)) return res.status(400).send({ status: false, message: "No user input to update" })
+        let { title, excerpt, releasedAt, ISBN } = requestBody;
+
+    //==validating title==//
+        if (title) {
+        if (!isValid(title)) return res.status(400).send({ status: false, message: "Title is not valid" })
+        const isUniqueTitle = await bookModel.findOne({title:title}) 
+        if(isUniqueTitle) return res.status(400).send({ status: false, message: `${title} already exist` })
+        }
+
+    //==validating excerpt==//
+        if (excerpt) {
+        if (!isValid(excerpt)) return res.status(400).send({ status: false, message: "Excerpt is not valid" })
+        }
+
+    //==validating Date==//
+        if (releasedAt) {
+        if (!isValid(releasedAt)) return res.status(400).send({ status: false, message: "Realease date is not valid" })
+        if (!isValidDate(releasedAt)) return res.status(400).send({ status: false, message: "Realease date format is not valid" })
+        }
+
+    //==validating ISBN==//
+        if (ISBN) {
+        if (!isValid(ISBN)) return res.status(400).send({ status: false, message: "ISBN is not valid" })
+        if (!isValidISBN(ISBN)) return res.status(400).send({ status: false, message: "ISBN format is not valid" })
+        const isUniqueISBN = await bookModel.findOne({ISBN:ISBN}) 
+        if(isUniqueISBN) return res.status(400).send({ status: false, message: `${ISBN} already exist` })
+        }
+
+    //==Updating Book Document==//
+       let updtedField = { title, excerpt, releasedAt, ISBN }  
+       const updateBook = await bookModel.findOneAndUpdate({_id:bookId, isDeleted: false }, updtedField, { new: true })
+       return res.status(200).send({ status: true, message: "Success", data:updateBook})
+    }catch(error){
+        return res.status(500).send({ status: false, msg: err.message })
+    }
+}
+
+//**********************************************************************//
+
+//---DELETE BOOK BY BOOK-ID
+const deleteBookData= async function(req,res){
+    try {
+//==validating bookId==//
+    let data = req.params.bookId;
+    if (!isValidObjectId(data)) return res.status(400).send({ status: false, message: "Not a valid book id" })
+
+    const deleteById= await bookModel.findOne({isDeleted:false,_id:data})
+    if(!deleteById) return res.status(404).send({status:false, msg:"Book not found"}) 
+
+//==Deleting by bookId==//
+    const deleteBook = await bookModel.findOneAndUpdate({_id:data},{isDeleted:true},{new:true})
+    return res.status(200).send({ status: true, msg: delete successfully, data:deleteBook})
+    
+    }catch(error){
+        return res.status(500).send({ status: false, msg: err.message })
+    }
+}
+
+//**********************************************************************//
+
+module.exports={createBook,getBookList,getBookById,deleteBookData,updateBook}
