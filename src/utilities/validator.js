@@ -1,5 +1,3 @@
-const { estimatedDocumentCount } = require("../models/userModel");
-
 const ObjectId = require("mongoose").Types.ObjectId
 
 let isValidRequestBody = function (body) {

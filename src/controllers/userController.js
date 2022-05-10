@@ -39,7 +39,7 @@ const registerUser = async function (req, res) {
 
         const saveUser = await userModel.create( userData)
 
-        return res.status(201).send({ status: true, message: "Sucess", data: saveUser })
+        return res.status(201).send({ status: true, message: "Success", data: saveUser })
 
     } catch (err) {
         return res.status(500).send({ status: false, error: err.message })
@@ -58,21 +58,19 @@ const loginUser = async function (req, res) {
 
         if (!isValid(email)) return res.status(400).send({ status: false, msg: "email is a mendatory field" })
         if (!isValidEmail(email)) return res.status(400).send({ status: false, msg: `${email} is not valid` })
-        let isUserEmailExist = await userModel.findOne({ email: email });
-        if (!isUserEmailExist) return res.status(404).send({ status: false, msg: "Email not found" })
+        
 
         if (!isValid(password)) return res.status(400).send({ status: false, msg: "Password is a mendatory field" })
-        if (!isValidPassword(password)) return res.status(400).send({ status: false, msg: `Password ${password}  must include atleast one special character[@$!%?&], one uppercase, one lowercase, one number and should be mimimum 8 to 15 characters long` })
-        let isUserPasswordExist = await userModel.findOne({ password: password });
-        if (!isUserPasswordExist) return res.status(401).send({ status: false, msg: "Password is inccorrect" })
 
-        const { _id } = isUserPasswordExist;
+
+        let isUserEmailExist = await userModel.findOne({ email: email,password: password });
+        if (!isUserEmailExist) return res.status(404).send({ status: false, msg: "Email or Password is incorrect!" })
+
+        const { _id } = isUserEmailExist;
 
         let token = jwt.sign(
             {
                 userId: _id.toString(),
-                batch: "uranium",
-                organisation: "FunctionUp",
                 iat: Math.floor(Date.now() / 1000),
                 exp: Math.floor(Date.now() / 1000 + 24 * 60 * 60)
             },
@@ -82,7 +80,7 @@ const loginUser = async function (req, res) {
         res.status(200).send({ status: true, message: "Success", data: { token: token } });
     }
     catch (err) {
-        res.status(500).send({ Error: "Server not responding", error: err.message });
+        res.status(500).send({ status:false, error: err.message });
     }
 };
 
