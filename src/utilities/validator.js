@@ -62,9 +62,9 @@ let isValidEnum= function(value){
 
 //==ISBN Validation
 let isValidISBN=function(value){
-    let isbnRegex=/(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)/
+    let isbnRegex=/^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/
     return isbnRegex.test(value);
-}
+} //(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)
 //**********************************************************************//
 
 //==Date Validation
