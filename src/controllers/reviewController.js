@@ -1,11 +1,8 @@
 
-
-//const mongoose = require("mongoose")
-//const ObjectId = mongoose.Schema.Types.ObjectId;
-//const { create } = require("../models/bookModel");
 const bookModel = require("../models/bookModel");
 const reviewModel = require("../models/reviewModel");
 const { isValidRequestBody, isValid,isValidObjectId } = require("../utilities/validator");
+
 
 //---CREATE REVIEW FOR BOOKID
     const createReview = async function (req, res) {
@@ -49,4 +46,41 @@ const { isValidRequestBody, isValid,isValidObjectId } = require("../utilities/va
         return res.status(500).send({ status: false, message: error.message })
     }
 }
-module.exports={createReview}
+
+//**********************************************************************//
+
+//---DELETE REVIEW FOR BOOKID
+    const deleteReview = async function (req, res) {
+    try {
+    //==validating review Id(params)==//
+        let reviewId = req.params.reviewId;
+        if (!isValidObjectId(reviewId)) return res.status(400).send({ status: false, message: "review Id is not a valid Id" })
+
+    //==validating book Id(params)==//
+        let bookId = req.params.bookId
+        if (!isValidObjectId(bookId)) return res.status(400).send({ status: false, message: "Book id is not a valid" })
+    
+    //==Review delete for deleted book==//
+        const deleteBook = await bookModel.findOne({ _id: bookId, isDeleted: false })
+        if (!deleteBook){
+           const updateReview =await reviewModel.findOneAndUpdate({_id:reviewId,isDeleted:false},{isDeleted:true},{new:true})
+        }
+
+    //==Review delete for present book==//
+        const updateReview= await reviewModel.findOneAndUpdate({_id:reviewId,bookId:bookId,isDeleted:false},{isDeleted:true},{new:true})
+        if (!updateReview) return res.status(404).send({ status: false, message: "review  data not found" })
+        
+    //==Updating review count in book document==//
+       const deleteReviewCount = await bookModel.findOneAndUpdate({_id:bookId},{$inc:{reviews:-1}},{new:true})
+       return res.status(200).send({ status: true, message: "Success",data:deleteReviewCount })  
+
+    } catch (error) {
+        return res.status(500).send({ status: false, message: error.message })
+    }
+}
+
+//**********************************************************************//
+
+module.exports = { createReview, deleteReview }
+
+//**********************************************************************//
