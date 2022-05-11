@@ -79,7 +79,7 @@ const { isValidObjectId } = require("mongoose");
 
         if (!booklist.length) return res.status(404).send({ status: false, message: "Books not found." })
        
-        res.status(200).send({ status: true,message: "Success", data: booklist })  
+        res.status(200).send({ status: true,message: "Books list", data: booklist })  
 
     } catch (err) { return res.status(500).send({ status: false, message: err.message }) }
 
