@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {registerUser, loginUser}=require("../controllers/userController")
 const {createBook,getBookList,getBookById,updateBook,deleteBookData}=require("../controllers/bookController")
+const {createReview,deleteReview}=require("../controllers/reviewController")
 const {authenticateUser,authorization}=require("../middlewares/auth")
 
 
@@ -26,6 +27,8 @@ router.put('/books/:bookId',authenticateUser,authorization, updateBook)
 
 //==Delete Book by BookId
 router.delete('/books/:bookId',authenticateUser,authorization,deleteBookData)
+router.post('/books/:bookId/review',createReview)
 
+router.delete('/books/:bookId/review/:reviewId',deleteReview)
 
 module.exports=router;
