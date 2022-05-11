@@ -1,11 +1,8 @@
 
+const userModel = require("../models/userModel");
 const bookModel = require("../models/bookModel");
 const { isValidRequestBody, isValid, isValidDate, isValidISBN } = require("../utilities/validator");
-
-const jwt = require("jsonwebtoken");
-const userModel = require("../models/userModel");
 const { isValidObjectId } = require("mongoose");
-
 
 
 //---CREATE BOOK
@@ -14,7 +11,6 @@ const { isValidObjectId } = require("mongoose");
     //==validating request body==//
         let requestBody = req.body
         if (!isValidRequestBody(requestBody)) return res.status(400).send({ status: false, message: "Invalid request, please provide details" })
-
         let { title, excerpt, userId, ISBN, category, subcategory, reviews, deletedAt, isDeleted, releasedAt } = requestBody
 
     //==validating title==//

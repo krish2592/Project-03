@@ -1,7 +1,7 @@
+
+const jwt = require("jsonwebtoken")
 const userModel = require("../models/userModel");
 const { isValidRequestBody, isValid, isValidEnum, isValidName, isValidMobile, isValidEmail, isValidPassword } = require("../utilities/validator");
-const jwt = require("jsonwebtoken")
-
 
 
 //---REGISTER USER

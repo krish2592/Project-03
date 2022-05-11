@@ -34,7 +34,7 @@ const { isValidRequestBody, isValid,isValidObjectId } = require("../utilities/va
         reviewCount ++;
         const updateReview = await bookModel.findOneAndUpdate({_id:data.bookId,isDeleted:false},{reviews:reviewCount },{new:true})
 
-    //==destructuring to get required keys only==// 
+    //==destructuring to get only required keys ==// 
         const { title,excerpt ,userId,category,reviews,subcategory,deletedAt,isDeleted, releasedAt,createdAt,updatedAt}=updateReview
         let  details = {  title,excerpt ,userId,category,reviews,subcategory,deletedAt,isDeleted, releasedAt,createdAt,updatedAt}
 
@@ -42,6 +42,7 @@ const { isValidRequestBody, isValid,isValidObjectId } = require("../utilities/va
         let getReview= await reviewModel.find({bookId:data.bookId,isDeleted: false}).select({_id:1,bookId:1,reviewedBy:1,reviewedAt:1,rating:1,review:1})
         details["reviewData"]=getReview
         return res.status(201).send({status:true, message:"Book list",data:details})
+
     }catch (error) {
         return res.status(500).send({ status: false, message: error.message })
     }
