@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {registerUser, loginUser}=require("../controllers/userController")
 const {createBook,getBookList,getBookById,updateBook,deleteBookData}=require("../controllers/bookController")
-const {createReview,deleteReview}=require("../controllers/reviewController")
+const {createReview,deleteReview,updatereview}=require("../controllers/reviewController")
 const {authenticateUser,authorization}=require("../middlewares/auth")
 
 
@@ -30,9 +30,13 @@ router.delete('/books/:bookId',authenticateUser,authorization,deleteBookData)
 //==Create Review for BookId
 router.post('/books/:bookId/review',authenticateUser,createReview)
 
+//==Update Review for BookId
+router.put('/books/:bookId/review/:reviewId',authenticateUser,authorization,updatereview)
+
 //==Delete Review for BookId
 router.delete('/books/:bookId/review/:reviewId',authenticateUser,deleteReview)
 
+
 module.exports=router;
 
-//**********************************************************************//
+//*******************************************************************//

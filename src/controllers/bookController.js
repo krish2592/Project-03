@@ -167,7 +167,7 @@ const updateBook = async function (req, res) {
     }
 }
 
-//**********************************************************************//
+//************************************************************** ********//
 
 //---DELETE BOOK BY BOOK-ID
 const deleteBookData = async function (req, res) {
@@ -183,6 +183,7 @@ const deleteBookData = async function (req, res) {
         { new: true })
     if (!deleteBook) return res.status(404).send({ status: false, message: "Book not found" })
     return res.status(200).send({ status: true, message: "Success", data: deleteBook })
+
 
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
