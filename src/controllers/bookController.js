@@ -167,7 +167,7 @@ const updateBook = async function (req, res) {
     }
 }
 
-//**********************************************************************//
+//************************************************************** ********//
 
 //---DELETE BOOK BY BOOK-ID
 const deleteBookData = async function (req, res) {
@@ -175,7 +175,7 @@ const deleteBookData = async function (req, res) {
         //==validating bookId==//
         let data = req.params.bookId;
         if (!isValidObjectId(data)) return res.status(400).send({ status: false, message: "Not a valid book id" })
-
+qqa2r99o
         //==Deleting by bookId==//
         const deleteBook = await bookModel.findOneAndUpdate(
             { _id: data, isDeleted: false },
