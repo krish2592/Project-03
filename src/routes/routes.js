@@ -28,7 +28,7 @@ router.put('/books/:bookId',authenticateUser,authorization, updateBook)
 router.delete('/books/:bookId',authenticateUser,authorization,deleteBookData)
 
 //==Create Review for BookId
-router.post('/books/:bookId/review',authenticateUser,authorization,createReview)
+router.post('/books/:bookId/review',authenticateUser,createReview)
 
 //==Update Review for BookId
 router.put('/books/:bookId/review/:reviewId',authenticateUser,authorization,updatereview)
