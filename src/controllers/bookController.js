@@ -68,12 +68,12 @@ const { isValidObjectId } = require("mongoose");
     //==getting sorted book-list with query params==// 
         let id = req.query.userId
         let category = req.query.category
-        let sub = req.query.subCategory
+        let sub = req.query.subcategory
 
         //--finding and sorting books--//
-        let booklist = await bookModel.find({ isDeleted: false,  $or: [{ userId: id }, { category: category },  { subCategory: sub }] },{_id:1,title:1,excerpt:1,userId:1,category:1,reviews:1,releasedAt:1}).sort({'title': 1})
+        let booklist = await bookModel.find({ isDeleted: false,  $or: [{ userId: id }, { category: category },  { subcategory: sub }] },{_id:1,title:1,excerpt:1,userId:1,category:1,reviews:1,releasedAt:1}).sort({'title': 1})
 
-        if (!booklist.length) return res.status(404).send({ status: false, message: "Books not found." })
+        if (booklist.length==0) return res.status(404).send({ status: false, message: "Books not found." })
        
         res.status(200).send({ status: true,message: "Books list", data: booklist })  
 
@@ -85,16 +85,16 @@ const { isValidObjectId } = require("mongoose");
 
 //---GET BOOK BY BOOK-ID
     const getBookById = async function(req,res){
-    try{
-          let bookId = req.params.bookId
+    try{         
     //==validating bookId==//
+          let bookId = req.params.bookId
           if (!isValid(bookId)) return res.status(400).send({ status: false, message: "Book Id Required." }) 
           if (!isValidObjectId(bookId)) return res.status(400).send({ status: false, message: `${bookId}  is not a valid.` })
 
      //==-getting book by book id==//     
           let bookList = await bookModel.find({_id : bookId, isDeleted: false })
 
-          if(!bookList.length) return res.status(404).send({ status: false, message: "Books not found." })
+          if(bookList.length==0) return res.status(404).send({ status: false, message: "Books not found." })
 
           res.status(200).send({ status: true,message: "Success", data: bookList })
 

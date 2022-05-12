@@ -31,6 +31,6 @@ router.delete('/books/:bookId',authenticateUser,authorization,deleteBookData)
 router.post('/books/:bookId/review',authenticateUser,createReview)
 
 //==Delete Review for BookId
-router.delete('/books/:bookId/review/:reviewId',deleteReview)
+router.delete('/books/:bookId/review/:reviewId',authenticateUser,deleteReview)
 
 module.exports=router;
