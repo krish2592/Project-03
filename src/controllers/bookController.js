@@ -1,6 +1,7 @@
 
 const userModel = require("../models/userModel");
 const bookModel = require("../models/bookModel");
+const reviewModel = require("../models/reviewModel");
 const { isValidRequestBody, isValid, isValidDate, isValidISBN } = require("../utilities/validator");
 const { isValidObjectId } = require("mongoose");
 
@@ -63,7 +64,9 @@ const getBookList = async function (req, res) {
         //==getting sorted book-list without query params==//    
         let list = await bookModel.find({ isDeleted: false }).sort({ 'title': 1 })
         if (list.length==0) { res.status(404).send({ status: false, message: "Books not found" }) }
-        if (!req.query) return res.status(200).send({ status: true, data: list })
+        if (!req.query) 
+
+        return res.status(200).send({ status: true, data: list })
 
         //==getting sorted book-list with query params==// 
         let userId = req.query.userId
@@ -111,9 +114,19 @@ const getBookById = async function (req, res) {
 
 
         //==-getting book by book id==//     
-        let bookList = await bookModel.find({ _id: bookId, isDeleted: false })
-        if(bookList.length==0) return res.status(404).send({ status: false, message: "Books not found." })
-        res.status(200).send({ status: true, message: "Success", data: bookList })
+        let bookList = await bookModel.findById({ _id: bookId, isDeleted: false })
+        if(!bookList) return res.status(404).send({ status: false, message: "Books not found." })
+
+
+        //==destructuring to get only required keys ==// 
+        const { title, excerpt, userId, category, reviews, subcategory, deletedAt, isDeleted, releasedAt, createdAt, updatedAt } = bookList
+        let details = { title, excerpt, userId, category, reviews, subcategory, deletedAt, isDeleted, releasedAt, createdAt, updatedAt }
+
+
+        //==finding and sending all reviews for book==// 
+        let getReview = await reviewModel.find({ bookId:bookId, isDeleted: false }).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
+        details["reviewData"] = getReview
+        return res.status(200).send({ status: true, message: "Book list", data: details })
 
     } catch (err) { return res.status(500).send({ status: false, message: err.message }) }
 }
