@@ -6,12 +6,15 @@ const {createReview,deleteReview,updatereview}=require("../controllers/reviewCon
 const {authenticateUser,authorization}=require("../middlewares/auth")
 
 
+          //---USER APIS---//
 //==Register User
 router.post('/register', registerUser)
 
 //==Login User
 router.post('/login', loginUser)
 
+
+       //---BOOK APIS---//
 //==Create Book Document
 router.post('/books',authenticateUser,createBook)
 
@@ -27,6 +30,8 @@ router.put('/books/:bookId',authenticateUser,authorization, updateBook)
 //==Delete Book by BookId
 router.delete('/books/:bookId',authenticateUser,authorization,deleteBookData)
 
+
+          //---REVIEW APIS---//
 //==Create Review for BookId
 router.post('/books/:bookId/review',createReview)
 
@@ -37,5 +42,6 @@ router.put('/books/:bookId/review/:reviewId',updatereview)
 router.delete('/books/:bookId/review/:reviewId',deleteReview)
 
 
-
 module.exports=router;
+
+//*******************************************************************//

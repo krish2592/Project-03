@@ -1,5 +1,5 @@
 
-const { request } = require("http");
+//const { request } = require("http");
 const bookModel = require("../models/bookModel");
 const reviewModel = require("../models/reviewModel");
 const { isValidRequestBody, isValid, isValidObjectId } = require("../utilities/validator");
@@ -37,12 +37,12 @@ const createReview = async function (req, res) {
 
         //==destructuring to get only required keys ==// 
         const { title, excerpt, userId, category, reviews, subcategory, deletedAt, isDeleted, releasedAt, createdAt, updatedAt } = updateReview
-       let details = { title, excerpt, userId, category, reviews, subcategory, deletedAt, isDeleted, releasedAt, createdAt, updatedAt }
+        let details = { title, excerpt, userId, category, reviews, subcategory, deletedAt, isDeleted, releasedAt, createdAt, updatedAt }
 
         //==finding and sending all reviews for book==// 
         //let getReview = await reviewModel.find({ bookId: data.bookId, isDeleted: false }).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
         details["reviewData"] = createData
-        return res.status(201).send({ status: true, message: "Book list",data:details })
+        return res.status(201).send({ status: true, message: "Book list", data: details })
 
     } catch (error) {
         return res.status(500).send({ status: false, message: error.message })
@@ -51,7 +51,7 @@ const createReview = async function (req, res) {
 
 //**********************************************************************//
 
-//-------UPDATE REVIEW-----------------------------------------------------------//
+//---UPDATE REVIEW
 const updatereview = async function (req, res) {
     try {
         //==validating review Id(params)==//
@@ -70,17 +70,17 @@ const updatereview = async function (req, res) {
 
         //==Destructuring to get request Body Entries==//
         let reqBody = req.body;
-       if (!isValidRequestBody(reqBody)) {
-           return res.status(400).send({status:false, message:"please enter data in body"})
-    }
+        if (!isValidRequestBody(reqBody)) {
+            return res.status(400).send({ status: false, message: "please enter data in body" })
+        }
         let { review, rating, reviewedBy } = reqBody
         let updateReview = { review, rating, reviewedBy }
 
-//==Updating review by review Id==//
+        //==Updating review by review Id==//
         const checkReview = await reviewModel.findOneAndUpdate({ _id: reviewId, isDeleted: false }, updateReview, { new: true })
         if (!checkReview) { return res.status(404).send({ status: false, message: "review not found" }) }
 
-         //==Destructuring to get required keys only ==//   
+        //==Destructuring to get required keys only ==//   
         let dBook = {
             title: checkBook.title,
             bookId: checkBook._id,
