@@ -28,13 +28,13 @@ router.put('/books/:bookId',authenticateUser,authorization, updateBook)
 router.delete('/books/:bookId',authenticateUser,authorization,deleteBookData)
 
 //==Create Review for BookId
-router.post('/books/:bookId/review',authenticateUser,createReview)
+router.post('/books/:bookId/review',createReview)
 
 //==Update Review for BookId
-router.put('/books/:bookId/review/:reviewId',authenticateUser,authorization,updatereview)
+router.put('/books/:bookId/review/:reviewId',updatereview)
 
 //==Delete Review for BookId
-router.delete('/books/:bookId/review/:reviewId',authenticateUser,authorization,deleteReview)
+router.delete('/books/:bookId/review/:reviewId',deleteReview)
 
 
 

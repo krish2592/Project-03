@@ -44,7 +44,7 @@ const createBook = async function (req, res) {
         if (!isValidDate(releasedAt)) return res.status(400).send({ status: false, message: "Please provide date in YYYY-MM-DD format" })
 
         //==Creating Book Document==//   
-        const bookData = { title, excerpt, userId, ISBN, category, reviews, subcategory, deletedAt, isDeleted, releasedAt };
+        const bookData = { title, excerpt, userId, ISBN, category,  subcategory, isDeleted, releasedAt };
         const saveBook = await bookModel.create(bookData)
         return res.status(201).send({ status: true, message: "Success", data: saveBook })
 
@@ -175,7 +175,7 @@ const deleteBookData = async function (req, res) {
         //==validating bookId==//
         let data = req.params.bookId;
         if (!isValidObjectId(data)) return res.status(400).send({ status: false, message: "Not a valid book id" })
-qqa2r99o
+
         //==Deleting by bookId==//
         const deleteBook = await bookModel.findOneAndUpdate(
             { _id: data, isDeleted: false },
