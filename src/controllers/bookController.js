@@ -12,7 +12,7 @@ const createBook = async function (req, res) {
         //==validating request body==//
         let requestBody = req.body
         if (!isValidRequestBody(requestBody)) return res.status(400).send({ status: false, message: "Invalid request, please provide details" })
-        let { title, excerpt, userId, ISBN, category, subcategory, reviews, deletedAt, isDeleted, releasedAt } = requestBody
+        let { title, excerpt, userId, ISBN, category, subcategory, isDeleted, releasedAt } = requestBody
 
         //==validating title==//
         if (!isValid(title)) return res.status(400).send({ status: false, message: "Title is a mendatory field" })
@@ -146,25 +146,29 @@ const updateBook = async function (req, res) {
         let { title, excerpt, releasedAt, ISBN } = requestBody;
 
         //==validating title==//
-        if (title) {
+        if(title==""){return res.status(400).send({ status: false, message: "Title is not valid" })}
+        else if (title) {
             if (!isValid(title)) return res.status(400).send({ status: false, message: "Title is not valid" })
             const isUniqueTitle = await bookModel.findOne({ title: title })
             if (isUniqueTitle) return res.status(400).send({ status: false, message: `${title} already exist` })
         }
 
         //==validating excerpt==//
-        if (excerpt) {
+        if(excerpt==""){return res.status(400).send({ status: false, message: "Excerpt is not valid" })}
+        else if (excerpt) {
             if (!isValid(excerpt)) return res.status(400).send({ status: false, message: "Excerpt is not valid" })
         }
 
         //==validating Date==//
-        if (releasedAt) {
+        if(releasedAt==""){return res.status(400).send({ status: false, message: "Realease date is not valid" })}
+        else if (releasedAt) {
             if (!isValid(releasedAt)) return res.status(400).send({ status: false, message: "Realease date is not valid" })
             if (!isValidDate(releasedAt)) return res.status(400).send({ status: false, message: "Realease date format is not valid" })
         }
 
         //==validating ISBN==//
-        if (ISBN) {
+        if(ISBN==""){return res.status(400).send({ status: false, message: "ISBN is not valid" })}
+        else if (ISBN) {
             if (!isValid(ISBN)) return res.status(400).send({ status: false, message: "ISBN is not valid" })
             if (!isValidISBN(ISBN)) return res.status(400).send({ status: false, message: "ISBN format is not valid" })
             const isUniqueISBN = await bookModel.findOne({ ISBN: ISBN })
@@ -192,11 +196,10 @@ const deleteBookData = async function (req, res) {
     //==Deleting by bookId==//
     const deleteBook = await bookModel.findOneAndUpdate(
         { _id: data, isDeleted: false },
-        { isDeleted: true, deletedAt: Date.now() },
+        { isDeleted: true, deletedAt: new Date() },
         { new: true })
     if (!deleteBook) return res.status(404).send({ status: false, message: "Book not found" })
     return res.status(200).send({ status: true, message: "Success", data: deleteBook })
-
 
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
