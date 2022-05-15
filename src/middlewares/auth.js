@@ -27,6 +27,7 @@ const authorization = async function (req, res, next) {
     try {
         let tokenId = req.userId;
         let bookId = req.params.bookId || req.query.bookId;
+
         if (!isValidObjectId(bookId)) return res.status(400).send({status:false,message:`Book id ${bookId} is invalid`})
 
         const findUser= await bookModel.findOne({_id:bookId});
