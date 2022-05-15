@@ -97,8 +97,7 @@ const updatereview = async function (req, res) {
         //==Finding Book by Id==//
         const checkBook = await bookModel.findOne({ _id: bookId, isDeleted: false })
 
-        console.log(checkBook)
-        if (Object.keys(checkBook).length==0) {
+        if (!checkBook) {
             return res.status(404).send({ status: false, message: "Book not found" })
         }
 
