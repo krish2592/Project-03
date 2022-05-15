@@ -46,6 +46,18 @@ const createBook = async function (req, res) {
         //==Creating Book Document==//   
         const bookData = { title, excerpt, userId, ISBN, category, subcategory, isDeleted, releasedAt };
         const saveBook = await bookModel.create(bookData)
+
+        // let result={
+        //    _id: saveBook._id,
+        //    title:saveBook.title,
+        //    excerpt:saveBook.excerpt,
+        //    userId:saveBook.userId,
+        //    ISBN:saveBook.ISBN,
+        //    category:saveBook.category,
+        //    subcategory:saveBook.subcategory,
+        //    releasedAt:saveBook.releasedAt
+        // }
+
         return res.status(201).send({ status: true, message: "Success", data: saveBook })
 
     } catch (err) {
@@ -91,8 +103,8 @@ const getBookList = async function (req, res) {
             filter["subcategory"] = { $all: subArr };
         }
 
-            //--finding and sorting books--//
-            let booklist = await bookModel.find(filter, { _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, subcategory: 1, reviews: 1, releasedAt: 1 }).sort({ 'title': 1 })
+        //--finding and sorting books--//
+        let booklist = await bookModel.find(filter, { _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, subcategory: 1, reviews: 1, releasedAt: 1 }).sort({ 'title': 1 })
 
         if (booklist.length == 0) return res.status(404).send({ status: false, message: "Books not found." })
 
@@ -115,7 +127,7 @@ const getBookById = async function (req, res) {
 
 
         //==-getting book by book id==//     
-        let bookList = await bookModel.findById({ _id: bookId, isDeleted: false })
+        let bookList = await bookModel.findOne({ _id: bookId, isDeleted: false })
         if (!bookList) return res.status(404).send({ status: false, message: "Books not found." })
 
 
@@ -179,6 +191,7 @@ const updateBook = async function (req, res) {
         //==Updating Book Document==//
         let updtedField = { title, excerpt, releasedAt, ISBN }
         const updateBook = await bookModel.findOneAndUpdate({ _id: bookId, isDeleted: false }, updtedField, { new: true })
+        if (!updateBook) return res.status(404).send({ status: false, message: "Book not found" })
         return res.status(200).send({ status: true, message: "Success", data: updateBook })
     } catch (error) {
         return res.status(500).send({ status: false, message: err.message })
