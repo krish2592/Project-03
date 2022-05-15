@@ -122,7 +122,7 @@ const updatereview = async function (req, res) {
         }
         return res.status(200).send({ status: true, message: "update the revirew data", data: dBook })
     } catch (error) {
-        return res.status(500).send({ status: false, message: error })
+        return res.status(500).send({ status: false, message: error.message })
     }
 }
 
