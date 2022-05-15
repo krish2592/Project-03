@@ -2,8 +2,7 @@
 const userModel = require("../models/userModel");
 const bookModel = require("../models/bookModel");
 const reviewModel = require("../models/reviewModel");
-const { isValidRequestBody, isValid, isValidDate, isValidISBN } = require("../utilities/validator");
-const { isValidObjectId } = require("mongoose");
+const { isValidRequestBody, isValid, isValidDate, isValidISBN,isValidObjectId } = require("../utilities/validator");
 
 
 //---CREATE BOOK
@@ -64,9 +63,7 @@ const getBookList = async function (req, res) {
         //==getting sorted book-list without query params==//    
         let list = await bookModel.find({ isDeleted: false }).sort({ 'title': 1 })
         if (list.length==0) { res.status(404).send({ status: false, message: "Books not found" }) }
-        if (!req.query) 
-
-        return res.status(200).send({ status: true, data: list })
+        if (!req.query) return res.status(200).send({ status: true, data: list })
 
         //==getting sorted book-list with query params==// 
         let userId = req.query.userId
@@ -76,8 +73,9 @@ const getBookList = async function (req, res) {
         //==validating req parameter==// 
         const filter = { isDeleted: false };
 
-        if (isValid(userId) && isValidObjectId(userId)) {
-            filter["userId"] = userId.toLowerCase();
+        if (isValid(userId)) {
+        if(!isValidObjectId(userId)) return res.status(400).send({ status: false, message: `user id ${userId} is invalid`})
+            filter["userId"] = userId
         }
 
         if (isValid(category)) {
@@ -96,6 +94,8 @@ const getBookList = async function (req, res) {
         if (booklist.length==0) return res.status(404).send({ status: false, message: "Books not found." })
 
         res.status(200).send({ status: true, message: "Books list", data: booklist })
+
+        
 
     } catch (err) { return res.status(500).send({ status: false, message: err.message }) }
 
