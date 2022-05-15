@@ -36,20 +36,20 @@ const createReview = async function (req, res) {
         //==finding book document & creating review==//
         let book = await bookModel.findOne({ _id:bookId, isDeleted: false })
         if (!book) { return res.status(400).send({ status: false, message: "No book exist with this id" }) }
-        let createData = await reviewModel.create(data);
+        let createData = await reviewModel.create(data)
 
         //==updating review in book document==//    
-        let reviewCount = book.reviews
-        reviewCount++;
-        const updateReview = await bookModel.findOneAndUpdate({ _id: bookId, isDeleted: false }, { reviews: reviewCount }, { new: true })
+        const updateReview = await bookModel.findOneAndUpdate({ _id: bookId, isDeleted: false },{$inc:{ reviews:1}}, { new: true })
 
         //==destructuring to get only required keys ==// 
         const { title, excerpt, userId, category, reviews, subcategory, deletedAt, isDeleted, releasedAt, createdAt, updatedAt } = updateReview
         let details = { title, excerpt, userId, category, reviews, subcategory, deletedAt, isDeleted, releasedAt, createdAt, updatedAt }
 
+        const {_id,reviewedBy,reviewedAt,rating,review}=createData
+        let reviewData={_id,bookId:bookId,reviewedBy,reviewedAt,rating,review}
         //==sending updated review for book==// 
-        details["reviewData"] = createData
-        return res.status(201).send({ status: true, message: "Book list", data: details })
+        details["reviewData"] = reviewData
+        return res.status(201).send({ status: true, message: "Book list", data: reviewData })
 
     } catch (error) {
         return res.status(500).send({ status: false, message: error.message })
