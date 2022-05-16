@@ -5,7 +5,7 @@ const mongoose  = require('mongoose');
 const app = express();
 
 app.use(bodyParser.json());
-//app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose.connect("mongodb+srv://root:Monkey_db%40123@cluster0.in2io.mongodb.net/group5Database", {
     useNewUrlParser: true

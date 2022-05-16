@@ -75,9 +75,7 @@ const getBookList = async function (req, res) {
         //==getting sorted book-list without query params==//    
         let list = await bookModel.find({ isDeleted: false }).sort({ 'title': 1 })
         if (list.length == 0) { res.status(404).send({ status: false, message: "Books not found" }) }
-        if (!req.query)
-
-            return res.status(200).send({ status: true, data: list })
+        if (!req.query) return res.status(200).send({ status: true, data: list })
 
         //==getting sorted book-list with query params==// 
         let userId = req.query.userId

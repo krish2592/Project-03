@@ -12,7 +12,6 @@ const createReview = async function (req, res) {
         if (!isValidRequestBody(data)) { return res.status(400).send({ status: false, message: "Enter data to create a review" }) }
         data["reviewedAt"] = new Date();
 
-
         //==validating bookId(params)==//
         let bookId = req.params.bookId
         if (!isValidObjectId(bookId)) { return res.status(400).send({ status: false, message: "Please provide valid Book Id in param." }) }
@@ -33,7 +32,6 @@ const createReview = async function (req, res) {
         else if (data.review) {
             if (!isValid(data.review)) { return res.status(400).send({ status: false, message: "Please provide valid review." }) }
         }
-
 
         //==finding book document & creating review==//
         let book = await bookModel.findOne({ _id: bookId, isDeleted: false })
@@ -131,7 +129,6 @@ const updatereview = async function (req, res) {
 //---DELETE REVIEW FOR BOOKID
 const deleteReview = async function (req, res) {
     try {
-
         //==validating book Id(params)==//
         let bookId = req.params.bookId
         if (!isValidObjectId(bookId)) return res.status(400).send({ status: false, message: `Book id ${bookId} is not a valid` })
