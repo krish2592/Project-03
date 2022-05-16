@@ -65,66 +65,65 @@ const createReview = async function (req, res) {
 const updatereview = async function (req, res) {
     try {
 
-        //==validating BookId(params)==//
-        bookId = req.params.bookId
-        if (!isValidObjectId(bookId)) return res.status(400).send({ status: false, message: "book Id is not Valid" })
+       //==validating BookId(params)==//
+       bookId = req.params.bookId
+       if (!isValidObjectId(bookId)) return res.status(400).send({ status: false, message: "book Id is not Valid" })
 
-        //==validating review Id(params)==//
-        let reviewId = req.params.reviewId
-        if (!isValidObjectId(reviewId)) return res.status(400).send({ status: false, message: " Invalid reviewId found" })
+       //==validating review Id(params)==//
+       let reviewId = req.params.reviewId
+       if (!isValidObjectId(reviewId)) return res.status(400).send({ status: false, message: " Invalid reviewId found" })
 
         //==validating request body==//
         let reqBody = req.body;
-        if (!isValidRequestBody(reqBody)) {
-            return res.status(400).send({ status: false, message: "please enter data in body" })
-        }
+       if (!isValidRequestBody(reqBody)) {
+           return res.status(400).send({ status: false, message: "please enter data in body" })
+       }
 
-        //==validating rating==//
-        if (!isValid(reqBody.rating)) { return res.status(400).send({ status: false, message: "Rating is required" }) }
-        if (!(reqBody.rating >= 1 && reqBody.rating <= 5)) { return res.status(400).send({ status: false, message: "Rating value should be between 1 to 5" }) }
+       //==validating rating==//
+       if(reqBody.rating==""){return res.status(400).send({ status: false, message: "Please provide valid rating."})}
+       else if(reqBody.rating){
+           if (!isValid(reqBody.rating)) { return res.status(400).send({ status: false, message: "Rating is required" }) }
+           if (!(reqBody.rating >= 1 && reqBody.rating <= 5)) { return res.status(400).send({ status: false, message: "Rating value should be between 1 to 5" }) }
+       }
 
-        //==validating reviewedBy==//
-        if (reqBody.reviewedBy == "") { return res.status(400).send({ status: false, message: "Please provide valid name." }) }
-        else if (reqBody.reviewedBy) {
-            if (!isValidName(data.reviewedBy)) { return res.status(400).send({ status: false, message: "Please provide valid name." }) }
-        }
+       //==validating reviewedBy==//
+       if(reqBody.reviewedBy==""){return res.status(400).send({ status: false, message: "Please provide valid name."})} 
+       else if(reqBody.reviewedBy){
+           if(!isValidName(reqBody.reviewedBy)){return res.status(400).send({ status: false, message: "Please provide valid name."})}}
 
-        //==validating review==//
-        if (reqBody.review == "") { return res.status(400).send({ status: false, message: "Please provide valid review." }) }
-        else if (reqBody.review) {
-            if (!isValid(reqBody.review)) { return res.status(400).send({ status: false, message: "Please provide valid review." }) }
-        }
+       //==validating review==//
+       if(reqBody.review==""){return res.status(400).send({ status: false, message: "Please provide valid review."})} 
+       else if(reqBody.review){
+           if(!isValid(reqBody.review)){return res.status(400).send({ status: false, message: "Please provide valid review."})}}
 
-        //==Finding Book by Id==//
-        const checkBook = await bookModel.findOne({ _id: bookId, isDeleted: false })
+       //==Finding Book by Id==//
+       const checkBook = await bookModel.findOne({ _id: bookId, isDeleted: false })
+       if (!checkBook) {
+           return res.status(404).send({ status: false, message: "Book not found" })
+       }
 
-        console.log(checkBook)
-        if (Object.keys(checkBook).length==0) {
-            return res.status(404).send({ status: false, message: "Book not found" })
-        }
+       //==Destructuring to get request Body Entries==//
+       let { review, rating, reviewedBy } = reqBody
+       let updateReview = { review, rating, reviewedBy }
 
-        //==Destructuring to get request Body Entries==//
-        let { review, rating, reviewedBy } = reqBody
-        let updateReview = { review, rating, reviewedBy }
+       //==Updating review by review Id==//
+       const checkReview = await reviewModel.findOneAndUpdate({ _id: reviewId, isDeleted: false }, updateReview, { new: true })
+       if (!checkReview) { return res.status(404).send({ status: false, message: "review not found" }) }
 
-        //==Updating review by review Id==//
-        const checkReview = await reviewModel.findOneAndUpdate({ _id: reviewId, isDeleted: false }, updateReview, { new: true })
-        if (!checkReview) { return res.status(404).send({ status: false, message: "review not found" }) }
-
-        //==Destructuring to get required keys only ==//   
-        let dBook = {
-            title: checkBook.title,
-            bookId: checkBook._id,
-            excerpt: checkBook.excerpt,
-            userId: checkBook.userId,
-            category: checkBook.category,
-            review: checkBook.review,
-            reviewData: checkReview
-        }
-        return res.status(200).send({ status: true, message: "update the revirew data", data: dBook })
-    } catch (error) {
-        return res.status(500).send({ status: false, message: error })
-    }
+       //==Destructuring to get required keys only ==//   
+       let dBook = {
+           title: checkBook.title,
+           bookId: checkBook._id,
+           excerpt: checkBook.excerpt,
+           userId: checkBook.userId,
+           category: checkBook.category,
+           review: checkBook.review,
+           reviewData: checkReview
+       }
+       return res.status(200).send({ status: true, message: "update the revirew data", data: dBook })
+   } catch (error) {
+       return res.status(500).send({ status: false, message: error.message })
+   }
 }
 
 //**********************************************************************//

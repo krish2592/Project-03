@@ -110,7 +110,6 @@ const getBookList = async function (req, res) {
 
         res.status(200).send({ status: true, message: "Books list", data: booklist })
 
-        
 
     } catch (err) { return res.status(500).send({ status: false, message: err.message }) }
 
