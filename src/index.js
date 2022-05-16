@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express');
 const bodyParser = require('body-parser');
 const route = require('./routes/routes.js');
@@ -7,7 +8,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-mongoose.connect("mongodb+srv://root:Monkey_db%40123@cluster0.in2io.mongodb.net/group5Database", {
+mongoose.connect(process.env.CONNECTION_STRING, {
     useNewUrlParser: true
 })
 .then( () => console.log("MongoDb is connected"))
@@ -15,6 +16,6 @@ mongoose.connect("mongodb+srv://root:Monkey_db%40123@cluster0.in2io.mongodb.net/
 
 app.use('/', route);
 
-app.listen(process.env.PORT || 3000, function () {
-    console.log('Express app running on port ' + (process.env.PORT || 3000))
+app.listen(process.env.PORT ||3000, function () {
+    console.log('Express app running on port ' + (process.env.PORT||3000))
 });

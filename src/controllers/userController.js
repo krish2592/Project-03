@@ -1,4 +1,5 @@
 
+require('dotenv').config()
 const jwt = require("jsonwebtoken")
 const userModel = require("../models/userModel");
 const { isValidRequestBody, isValid, isValidEnum, isValidName, isValidMobile, isValidEmail, isValidPassword } = require("../utilities/validator");
@@ -84,7 +85,7 @@ const loginUser = async function (req, res) {
                 iat: Math.floor(Date.now() / 1000),
                 exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60
             },
-            "Dksfoljdc45095"
+            process.env.SECRET_KEY
         );
         res.setHeader("x-api-key", token);
         res.status(200).send({ status: true, message: "Success", data: { token: token } });
