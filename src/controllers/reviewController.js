@@ -104,6 +104,10 @@ const updatereview = async function (req, res) {
        let { review, rating, reviewedBy } = reqBody
        let updateReview = { review, rating, reviewedBy }
 
+        if (!checkBook) {
+            return res.status(404).send({ status: false, message: "Book not found" })
+        }
+
        //==Updating review by review Id==//
        const checkReview = await reviewModel.findOneAndUpdate({ _id: reviewId, isDeleted: false }, updateReview, { new: true })
        if (!checkReview) { return res.status(404).send({ status: false, message: "review not found" }) }
@@ -123,7 +127,6 @@ const updatereview = async function (req, res) {
        return res.status(500).send({ status: false, message: error.message })
    }
 }
-
 //**********************************************************************//
 
 //---DELETE REVIEW FOR BOOKID
