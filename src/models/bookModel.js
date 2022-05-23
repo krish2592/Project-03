@@ -12,7 +12,7 @@ let bookSchema = new mongoose.Schema({
     deletedAt: { type: Date, trim: true, default: null },
     isDeleted: { type: Boolean, trim: true, default: false },
     releasedAt: { type: String, trim: true, required: true },
-    bookCover: { type: String, trim: true }
+    bookCover: { type: String, required: true, trim: true }
 },
     { timestamps: true }
 );

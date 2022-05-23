@@ -38,8 +38,13 @@ let uploadFile = async (file) => {
 const createBook = async function (req, res) {
     try {
         //==validating request body==//
-        let requestBody = req.body
-  
+        let requestBody
+        if (typeof req.body.data=="string" && req.body.data) {
+            requestBody = JSON.parse(req.body.data)
+        } else  {
+            requestBody = req.body
+        }
+
         if (!isValidRequestBody(requestBody)) return res.status(400).send({ status: false, message: "Invalid request, please provide details" })
         let { title, excerpt, userId, ISBN, category, subcategory, isDeleted, releasedAt, bookCover } = requestBody
 
@@ -81,11 +86,11 @@ const createBook = async function (req, res) {
             bookCover = uploadedFileURL;
         }
         else {
-            res.status(400).send({ msg: "No file found" })
+           return res.status(400).send({ msg: "No file found" })
         }
 
-          //==validating bookCover==//
-         // if (!isValid(bookCover)) return res.status(400).send({ status: false, message: "Book cover is a mendatory field" })
+        //==validating bookCover==//
+        if (!isValid(bookCover)) return res.status(400).send({ status: false, message: "Book cover is a mendatory field" })
 
         //==Creating Book Document==//   
         const bookData = { title, excerpt, userId, ISBN, category, subcategory, isDeleted, releasedAt, bookCover };
