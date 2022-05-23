@@ -1,8 +1,37 @@
-
+const aws = require('aws-sdk')
 const userModel = require("../models/userModel");
 const bookModel = require("../models/bookModel");
 const reviewModel = require("../models/reviewModel");
 const { isValidRequestBody, isValid, isValidDate, isValidISBN, isValidObjectId } = require("../utilities/validator");
+
+let uploadFile = async (file) => {
+    return new Promise(function (resolve, reject) {
+        // this function will upload file to aws and return the link
+        let s3 = new aws.S3({ apiVersion: '2006-03-01' }); // we will be using the s3 service of aws
+
+        var uploadParams = {
+            ACL: "public-read",
+            Bucket: "classroom-training-bucket",  //HERE
+            Key: "BookCover_V01/" + file.originalname, //HERE 
+            Body: file.buffer
+        }
+
+
+        s3.upload(uploadParams, function (err, data) {
+            if (err) {
+                return reject({ "error": err })
+            }
+            console.log(data)
+            console.log("file uploaded succesfully")
+            return resolve(data.Location)
+        })
+
+        // let data= await s3.upload( uploadParams)
+        // if( data) return data.Location
+        // else return "there is an error"
+
+    })
+}
 
 
 //---CREATE BOOK
@@ -10,8 +39,9 @@ const createBook = async function (req, res) {
     try {
         //==validating request body==//
         let requestBody = req.body
+  
         if (!isValidRequestBody(requestBody)) return res.status(400).send({ status: false, message: "Invalid request, please provide details" })
-        let { title, excerpt, userId, ISBN, category, subcategory, isDeleted, releasedAt } = requestBody
+        let { title, excerpt, userId, ISBN, category, subcategory, isDeleted, releasedAt, bookCover } = requestBody
 
         //==validating title==//
         if (!isValid(title)) return res.status(400).send({ status: false, message: "Title is a mendatory field" })
@@ -43,8 +73,22 @@ const createBook = async function (req, res) {
         if (!isValid(releasedAt)) return res.status(400).send({ status: false, msg: "releasedAt is mandatory field" })
         if (!isValidDate(releasedAt)) return res.status(400).send({ status: false, message: "Please provide date in YYYY-MM-DD format" })
 
+        let files = req.files
+        if (files && files.length > 0) {
+            //upload to s3 and get the uploaded link
+            // res.send the link back to frontend/postman
+            let uploadedFileURL = await uploadFile(files[0])
+            bookCover = uploadedFileURL;
+        }
+        else {
+            res.status(400).send({ msg: "No file found" })
+        }
+
+          //==validating bookCover==//
+         // if (!isValid(bookCover)) return res.status(400).send({ status: false, message: "Book cover is a mendatory field" })
+
         //==Creating Book Document==//   
-        const bookData = { title, excerpt, userId, ISBN, category, subcategory, isDeleted, releasedAt };
+        const bookData = { title, excerpt, userId, ISBN, category, subcategory, isDeleted, releasedAt, bookCover };
         const saveBook = await bookModel.create(bookData)
 
         return res.status(201).send({ status: true, message: "Success", data: saveBook })
