@@ -6,31 +6,30 @@ const { isValidRequestBody, isValid, isValidDate, isValidISBN, isValidObjectId }
 
 let uploadFile = async (file) => {
     return new Promise(function (resolve, reject) {
-        // this function will upload file to aws and return the link
-        let s3 = new aws.S3({ apiVersion: '2006-03-01' }); // we will be using the s3 service of aws
 
-        var uploadParams = {
-            ACL: "public-read",
-            Bucket: "classroom-training-bucket",  //HERE
-            Key: "BookCover_V01/" + file.originalname, //HERE 
-            Body: file.buffer
-        }
+            // This function will upload file to aws and return the link
+            let s3 = new aws.S3({ apiVersion: '2006-03-01' }); // we will be using the s3 service of aws
 
-
-        s3.upload(uploadParams, function (err, data) {
-            if (err) {
-                return reject({ "error": err })
+            var uploadParams = {
+                ACL: "public-read",
+                Bucket: "classroom-training-bucket",  //HERE
+                Key: "BookCover_V01/" + file.originalname, //HERE 
+                Body: file.buffer
             }
-            console.log(data)
-            console.log("file uploaded succesfully")
-            return resolve(data.Location)
+
+            // let data= await s3.upload( uploadParams)
+            // if( data) return data.Location
+            // else return "there is an error"
+            s3.upload(uploadParams, function (err, data) {
+                if (err) {
+                    return reject({ "error": err })
+                }
+                console.log(data)
+                console.log("file uploaded succesfully")
+                return resolve(data.Location)
+            })
+
         })
-
-        // let data= await s3.upload( uploadParams)
-        // if( data) return data.Location
-        // else return "there is an error"
-
-    })
 }
 
 
@@ -39,9 +38,9 @@ const createBook = async function (req, res) {
     try {
         //==validating request body==//
         let requestBody
-        if (typeof req.body.data=="string" && req.body.data) {
+        if (typeof req.body.data == "string" && req.body.data) {
             requestBody = JSON.parse(req.body.data)
-        } else  {
+        } else {
             requestBody = req.body
         }
 
@@ -86,7 +85,7 @@ const createBook = async function (req, res) {
             bookCover = uploadedFileURL;
         }
         else {
-           return res.status(400).send({ msg: "No file found" })
+            return res.status(400).send({ msg: "No file found" })
         }
 
         //==validating bookCover==//
